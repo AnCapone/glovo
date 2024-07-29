@@ -1,40 +1,51 @@
 package org.example.glovo.service;
 
-import org.example.glovo.dto.Order;
+import lombok.AllArgsConstructor;
+import org.example.glovo.dto.ItemDto;
+import org.example.glovo.dto.OrderDto;
+import org.example.glovo.entity.ItemEntity;
+import org.example.glovo.entity.OrderEntity;
+import org.example.glovo.entity.ProductEntity;
+import org.example.glovo.mapper.ItemMaper;
+import org.example.glovo.mapper.OrderMapper;
 import org.example.glovo.repository.OrderRepository;
+import org.example.glovo.repository.ProductRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Component
-
+@Service
+@AllArgsConstructor
 public class OrderService {
 
+    private final ProductRepository productRepository;
     private OrderRepository orderRepository;
 
-    public Order getOrder(int id) {
-        return orderRepository.getOrder(id);
+
+    public List<OrderDto> getAll(){
+        return orderRepository.findAll().stream().map(OrderMapper::toDto).toList();
     }
 
-    public void deleteOrder(int id) {
-        orderRepository.deleteOrder(id);
+    public OrderDto save(OrderDto orderDto){
+        return OrderMapper.toDto(orderRepository.save(OrderMapper.toEntity(orderDto)));
     }
 
-    public Order updateOrder(Order order) {
-        return orderRepository.updateOrder(order);
+    public OrderDto addItem(ItemDto itemDto, int orderId){
+        OrderEntity orderEntity = orderRepository.findById(orderId).orElseThrow();
+        ItemEntity itemEntity = ItemMaper.toEntity(itemDto);
+        ProductEntity productEntity = productRepository.findById(itemDto.getProductId()).orElseThrow();
+        itemEntity.setOrder(orderEntity);
+        ProductEntity build = ProductEntity.builder().id(itemEntity.getProduct().getId()).build();
+        itemEntity.setProduct(build);
+        return OrderMapper.toDto(orderRepository.save(orderEntity));
     }
 
-    public Order createOrder(Order order) {
-        return orderRepository.createOrder(order);
+    public OrderDto getById(int id){
+        return OrderMapper.toDto(orderRepository.findById(id).orElseThrow());
     }
 
-    public Order addProductToOrder(int orderId, String product) {
-        return orderRepository.addProductToOrder(orderId, product);
+    public void delete(int id){
+        orderRepository.deleteById(id);
     }
-
-    public Order removeProductFromOrder(int orderId, String product) {
-        return orderRepository.removeProductFromOrder(orderId, product);
-    }
-
 }

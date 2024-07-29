@@ -1,11 +1,13 @@
 package org.example.glovo.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.glovo.dto.Order;
+import org.example.glovo.dto.ItemDto;
+import org.example.glovo.dto.OrderDto;
 import org.example.glovo.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -17,33 +19,34 @@ public class OrderController {
 
 
     @GetMapping("/{id}")
-    public Order getOrder(@PathVariable int id) {
-        return orderService.getOrder(id);
+    public OrderDto getById(@PathVariable int id) {
+        return orderService.getById(id);
     }
 
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable int id) {
-        orderService.deleteOrder(id);
+
+        orderService.delete(id);
     }
 
-    @PutMapping("/{id}")
-    public Order updateOrder(@PathVariable int id, @RequestBody Order order) {
-        return orderService.updateOrder(order);
+    @GetMapping()
+    public List<OrderDto> getAll() {
+        return orderService.getAll();
     }
 
     @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
+    public OrderDto save(@RequestBody OrderDto orderDto) {
+        return orderService.save(orderDto);
     }
 
-    @PostMapping("/{orderId}/products")
-    public Order addProductToOrder(@PathVariable int orderId, @RequestBody String product) {
-        return orderService.addProductToOrder(orderId, product);
+    @GetMapping("/{id}/items")
+    public OrderDto addItem(@RequestBody ItemDto itemDto, @PathVariable int id) {
+        return orderService.addItem(itemDto, id);
     }
 
-    @PutMapping("/{orderId}/products")
-    public Order removeProductFromOrder(@PathVariable int orderId, @RequestBody String product) {
-        return orderService.removeProductFromOrder(orderId, product);
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        orderService.delete(id);
     }
 
 }

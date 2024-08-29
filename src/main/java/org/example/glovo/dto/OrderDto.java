@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class Order {
+public class OrderDto {
     private int id;
-    private String customerName;
-    private List<String> productsList;
+    private int orderNumber;
+    private List<Integer> itemsId;
 
 }
